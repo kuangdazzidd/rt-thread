@@ -123,7 +123,7 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
     global Rtt_Root
 
     Env = env
-    Rtt_Root = root_directory
+    Rtt_Root = os.path.abspath(root_directory)
 
     # add compability with Keil MDK 4.6 which changes the directory of armcc.exe
     if rtconfig.PLATFORM == 'armcc':
@@ -273,6 +273,17 @@ def PrepareBuilding(env, root_directory, has_libcpu=False, remove_components = [
         from genconf import genconfig
         genconfig()
         exit(0)
+
+    if env['PLATFORM'] != 'win32':
+        AddOption('--menuconfig', 
+                    dest = 'menuconfig',
+                    action = 'store_true',
+                    default = False,
+                    help = 'make menuconfig for RT-Thread BSP')
+        if GetOption('menuconfig'):
+            from menuconfig import menuconfig
+            menuconfig(Rtt_Root)
+            exit(0)
 
     # add comstr option
     AddOption('--verbose',
